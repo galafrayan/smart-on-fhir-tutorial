@@ -72,13 +72,13 @@
           p.ldl = getQuantityValueAndUnit(ldl[0]);
           p.temp = getQuantityValueAndUnit(temp[0]);
 
+          p.allergies = "";
           allergies.forEach(function(allergy){
             if (typeof(allergy.code) === "object") {
               console.log(allergy.code.text);
+              p.allergies += "<div>"+allergy.code.text+"</div>";
             }
           })
-          
-          p.allergies = "";
           
           ret.resolve(p);
         });
