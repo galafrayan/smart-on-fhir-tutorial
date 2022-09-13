@@ -15,15 +15,26 @@
                     type: 'Observation',
                     query: {
                       code: {
-                        $or: ['http://loinc.org|8302-2', 'http://loinc.org|2085-9',
-                              'http://loinc.org|2089-1', 'http://loinc.org|85354-9', 'http://loinc.org|8310-5']
+                        $or: ['http://loinc.org|8302-2', 
+                              'http://loinc.org|2085-9',
+                              'http://loinc.org|2089-1', 
+                              'http://loinc.org|85354-9', 
+                              'http://loinc.org|8310-5']
                       }
                     }
                   });
 
-        $.when(pt, obv).fail(onError);
+        var alg = smart.patient.api.fetchAll({
+                    type: 'AllergyIntolerance',
+                    query: {
+                      "clinical-status": "active"
+                    }
+                  });
 
-        $.when(pt, obv).done(function(patient, obv) {
+        $.when(pt, obv, alg).fail(onError);
+
+        $.when(pt, obv, alg).done(function(patient, obv, allergies) {
+          console.log(allergies);
           var byCodes = smart.byCodes(obv, 'code');
           var gender = patient.gender;
 
@@ -61,6 +72,8 @@
           p.ldl = getQuantityValueAndUnit(ldl[0]);
           p.temp = getQuantityValueAndUnit(temp[0]);
 
+          p.allergies = "";
+          
           ret.resolve(p);
         });
       } else {
@@ -85,6 +98,7 @@
       ldl: {value: ''},
       hdl: {value: ''},
       temp: {value: ''}
+      allergies: {value: ''}
     };
   }
 
@@ -127,8 +141,9 @@
     $('#systolicbp').html(p.systolicbp);
     $('#diastolicbp').html(p.diastolicbp);
     $('#ldl').html(p.ldl);
-    $('#hdl').html(p.hdl);
+    $('#hdl').html(p.hdl);    
     $('#temp').html(p.temp);
+    $('#allergies').html(p.allergies);
   };
 
 })(window);
